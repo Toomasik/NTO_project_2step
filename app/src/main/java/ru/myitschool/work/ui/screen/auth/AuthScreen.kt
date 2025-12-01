@@ -86,11 +86,12 @@ private fun Content(
         value = inputText,
         onValueChange = {
             inputText = it // для вывода кода
-            viewModel.onIntent(AuthIntent.TextInput(it)) // передаем код
+            // viewModel.onIntent(AuthIntent.TextInput(it)) // передаем код
             if (state.err.isNotEmpty()) {viewModel.onIntent(AuthIntent.ResetError)}
             val condition1 = it.isNotEmpty()
             val condition2 = it.length == 4
-            val condition3 = it.all { ch -> ch.isLetterOrDigit() }
+            // val condition3 = it.all { ch -> ch.isLetterOrDigit() } // <- принимает кирилицу хотя по условию незя (было до меня 😵‍💫)
+            val condition3 = it.matches(Regex("^[A-Za-z0-9]+$"))
             isEnabled = condition1 && condition2 && condition3
         },
         label = { Text(stringResource(R.string.auth_label)) },
