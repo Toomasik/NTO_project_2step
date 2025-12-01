@@ -26,8 +26,6 @@ class AuthViewModel : ViewModel() {
             is AuthIntent.Send -> {
                 viewModelScope.launch(Dispatchers.Default) {
                     _uiState.update { AuthState.Loading }
-                    val currentState = _uiState.value
-                    val code = if (currentState is AuthState.Data) currentState.code else ""
                     checkAndSaveAuthCodeUseCase.invoke(intent.text).fold(
                         onSuccess = {
                             _actionFlow.emit(Unit)
@@ -41,11 +39,7 @@ class AuthViewModel : ViewModel() {
                     )
                 }
             }
-            /*is AuthIntent.TextInput -> {
-                if (_uiState.value is AuthState.Data) {
-                    _uiState.value = AuthState.Data(code = intent.text)
-                }
-            }*/
+            // is AuthIntent.TextInput -> Unit
             is AuthIntent.ResetError -> {
                 val currentState = _uiState.value
                 if (currentState is AuthState.Data && currentState.err.isNotEmpty())  {
