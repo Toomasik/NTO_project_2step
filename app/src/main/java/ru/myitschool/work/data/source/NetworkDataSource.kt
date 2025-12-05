@@ -39,7 +39,7 @@ object NetworkDataSource {
         }
     }
 
-    suspend fun getInfo(code: String): Result<Boolean> = withContext(Dispatchers.IO) {
+    suspend fun getInfo(code: String): Result<Boolean> = withContext(Dispatchers.IO) { // я так понял инфу аккаунта (image,name, id?)
         return@withContext runCatching {
             val response = client.get(getUrl(code, Constants.AUTH_URL))
             when (response.status) {
@@ -50,6 +50,7 @@ object NetworkDataSource {
     }
 
     suspend fun getBooking(code: String): Result<Boolean> = withContext(Dispatchers.IO) {
+        // типа передаем id как раз
         return@withContext runCatching {
             val response = client.get(getUrl(code, Constants.AUTH_URL))
             when (response.status) {
@@ -60,6 +61,7 @@ object NetworkDataSource {
     }
 
     suspend fun createBook(code: String): Result<Boolean> = withContext(Dispatchers.IO) {
+        // вот это логично выглядит ток не String а List какой нить т.к. мы передаем дату (дд.мм.гггг) и комнату
         return@withContext runCatching {
             val response = client.post(getUrl(code, "book"))
             when (response.status) {

@@ -15,11 +15,11 @@ import ru.myitschool.work.domain.auth.CheckAndSaveAuthCodeUseCase
 
 class AuthViewModel : ViewModel() {
     private val checkAndSaveAuthCodeUseCase by lazy { CheckAndSaveAuthCodeUseCase(AuthRepository) }
-    private val _uiState = MutableStateFlow<AuthState>(AuthState.Data())
-    val uiState: StateFlow<AuthState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<AuthState>(AuthState.Data()) // mutable - изменяемый соотв можно изменять сотояние элементов
+    val uiState: StateFlow<AuthState> = _uiState.asStateFlow() // тока читать поток типа get(сотояние элементов)
 
-    private val _actionFlow: MutableSharedFlow<Unit> = MutableSharedFlow()
-    val actionFlow: SharedFlow<Unit> = _actionFlow
+    private val _actionFlow: MutableSharedFlow<Unit> = MutableSharedFlow() // mutable - изменяемый соотв можно добавлять что то в поток
+    val actionFlow: SharedFlow<Unit> = _actionFlow // тока читать поток типа get(данные с потока)
 
     fun onIntent(intent: AuthIntent) {
         when (intent) {
@@ -32,6 +32,7 @@ class AuthViewModel : ViewModel() {
                         },
                         onFailure = { error ->
                             error.printStackTrace()
+                            _actionFlow.emit(Unit) // test переход на main передаем void обьект в поток это ловит(собирает) корутина с помощью collect
                             _uiState.value = AuthState.Data(
                                 err = error.message ?: "Неизвестная ошибка"
                             )
