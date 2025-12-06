@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -36,6 +37,7 @@ import androidx.navigation.NavController
 import ru.myitschool.work.R
 import ru.myitschool.work.core.TestIds
 import ru.myitschool.work.ui.nav.MainScreenDestination
+import ru.myitschool.work.ui.screen.main.MainScreen
 
 @Composable
 fun AuthScreen(
@@ -65,8 +67,9 @@ fun AuthScreen(
         when (val currentState = state) {
             is AuthState.Data -> Content(viewModel, currentState)
             is AuthState.Loading -> {
+                //Spacer(Modifier.padding(horizontal = 5.dp))
                 CircularProgressIndicator(
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier.padding(12.dp).size(64.dp)
                 )
             }
         }
@@ -100,8 +103,7 @@ private fun Content(
         supportingText = {
             if (state.err.isNotEmpty()) {
                 Text(state.err,
-                    // TODO: в проде убрать черный фон и белый текст
-                    Modifier.testTag(TestIds.Auth.ERROR).padding(top = 4.dp).background(Color.Black),
+                    Modifier.testTag(TestIds.Auth.ERROR).padding(top = 4.dp).background(Color.DarkGray).clip(RoundedCornerShape(5.dp)),
                     fontSize = 16.sp,
                     color = Color.White
                 )}

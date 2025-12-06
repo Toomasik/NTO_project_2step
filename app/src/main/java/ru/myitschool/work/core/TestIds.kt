@@ -9,7 +9,7 @@ object TestIds {
     object Main {
         const val ERROR = "main_error"
         const val ADD_BUTTON = "main_add_button"
-        const val REFRESH_BUTTON = "main_refresh_button"
+        const val REFRESH_BUTTON = "main_refresh_button" // todo: 2 т.к. одна кнопка сверху одна по центру наверное нужно переделать
         const val LOGOUT_BUTTON = "main_logout_button"
         const val PROFILE_IMAGE = "main_image"
         const val PROFILE_NAME = "main_name"
