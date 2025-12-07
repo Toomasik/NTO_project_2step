@@ -24,7 +24,7 @@ sealed class BookState {
                 Booking(6, "Зал ж5")
             )
         ),
-        val date: String? = bookings.keys.sorted().firstOrNull(),
+        val date: String? = bookings.keys.minOrNull(),
         val err: String = ""
     ): BookState() {
         val rooms: List<Booking>

@@ -84,7 +84,6 @@ fun MainScreen(
             }
         }
         is ProfileState.Error -> {
-            // TODO: Доделать пункты 1 и 5
             Column(Modifier.fillMaxSize(),
                 Arrangement.Center,
                 Alignment.CenterHorizontally) {
@@ -188,7 +187,7 @@ fun MainScreen(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                val bookingList = (state as ProfileState.Success).bookings.toList().sortedBy {it.first}
+                val bookingList = (state as ProfileState.Success).bookings.toList()
                 LazyColumn() {
                     itemsIndexed(bookingList) { index, item ->
                         Card(Modifier.fillMaxWidth().padding(6.dp).testTag(TestIds.Main.getIdItemByPosition(index)),
@@ -198,12 +197,12 @@ fun MainScreen(
                                 verticalAlignment = Alignment.CenterVertically ){
                                 val label = item.second.place.take(1)
                                 Box(
-                                    Modifier.size(50.dp).background(MaterialTheme.colorScheme.onPrimary, CircleShape),
+                                    Modifier.size(50.dp).background(MaterialTheme.colorScheme.primary, CircleShape),
                                     Alignment.Center
                                 ) {
                                     Text(
                                         label,
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onPrimary,
                                         fontSize = 28.sp,
                                         //fontWeight = FontWeight.ExtraBold
                                     )

@@ -1,5 +1,6 @@
 package ru.myitschool.work.ui.screen.book
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,6 +30,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import ru.myitschool.work.R
+import ru.myitschool.work.core.Constants.USE_TEST
 import ru.myitschool.work.core.TestIds
 import ru.myitschool.work.ui.nav.MainScreenDestination
 
@@ -54,6 +57,23 @@ fun BookScreen(
 ) {
     val state by vm.state.collectAsState()
     val selectedRoomId by vm.selectedRoomId.collectAsState()
+    LaunchedEffect(Unit) {
+        vm.events.collect { ev ->
+            if(USE_TEST) Log.d("event!", "event: $ev")
+            when (ev) {
+                is BookViewModel.BookEvent.BookingSuccess -> {
+                    //обновить данные на main
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("need_reload", true)
+                    // возврат
+                    navController.popBackStack()
+                }
+
+                is BookViewModel.BookEvent.BookingError -> {}
+            }
+        }
+    }
     when (state) {
         is BookState.Loading -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -95,7 +115,8 @@ fun BookScreen(
                     Text("Все забронированно", Modifier.fillMaxWidth().padding(30.dp).testTag(TestIds.Book.EMPTY),
                         fontSize = 20.sp,
                         textAlign = TextAlign.Center)
-                } else {
+                }
+                if((state as BookState.Data).err.isEmpty() && dates.isNotEmpty()) {
                     LazyRow() {
                         itemsIndexed(dates) { index, date ->
                             val selected = date == (state as BookState.Data).date
@@ -111,8 +132,10 @@ fun BookScreen(
                                 colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
                                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                             ) {
-                                Text(date, Modifier.testTag(TestIds.Book.ITEM_DATE),
-                                    color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
+                                Text(
+                                    date, Modifier.testTag(TestIds.Book.ITEM_DATE),
+                                    color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                )
                             }
                         }
                     }
@@ -124,10 +147,11 @@ fun BookScreen(
                                 Modifier.fillMaxWidth().padding(6.dp).border(
                                     width = 1.dp,
                                     color = MaterialTheme.colorScheme.outline,
-                                    shape = RoundedCornerShape(8.dp))
+                                    shape = RoundedCornerShape(8.dp)
+                                )
                                     .selectable(
-                                    selected = isSelected,
-                                    onClick = {vm.selectRoom(room.id)})
+                                        selected = isSelected,
+                                        onClick = { vm.selectRoom(room.id) })
                                     .testTag(TestIds.Book.getIdPlaceItemByPosition(index)),
                                 RoundedCornerShape(8.dp),
                                 elevation = CardDefaults.cardElevation(3.dp)
@@ -135,9 +159,15 @@ fun BookScreen(
                                 Row() {
                                     Text(
                                         room.place,
-                                        Modifier.padding(5.dp).testTag(TestIds.Book.ITEM_PLACE_TEXT))
+                                        Modifier.padding(5.dp).testTag(TestIds.Book.ITEM_PLACE_TEXT)
+                                    )
                                     Spacer(Modifier.weight(1f))
-                                    RadioButton(selected = isSelected,null, Modifier.padding(5.dp).testTag(TestIds.Book.ITEM_PLACE_SELECTOR))
+                                    RadioButton(
+                                        selected = isSelected,
+                                        null,
+                                        Modifier.padding(5.dp)
+                                            .testTag(TestIds.Book.ITEM_PLACE_SELECTOR)
+                                    )
                                 }
                             }
                         }
@@ -146,10 +176,9 @@ fun BookScreen(
                     if (rooms.isNotEmpty()) {
                         Button(
                             {
-                                if((state as BookState.Data).err.isEmpty()) // тут норм
-                                navController.navigate(MainScreenDestination) {
-                                    popUpTo(MainScreenDestination)}
-                                vm.addBook(id = selectedRoomId,(state as BookState.Data).date)
+                                vm.addBook(selectedRoomId, (state as BookState.Data).date)
+                                if(USE_TEST) Log.d("On click!", "Click addBook selectedRoomId=$selectedRoomId date=${(state as? BookState.Data)?.date}")
+
                             },
                             Modifier
                                 .fillMaxWidth()
@@ -162,21 +191,20 @@ fun BookScreen(
                             RoundedCornerShape(3.dp)
                         }
                     }
-                    if ((state as BookState.Data).err.isNotEmpty()) {
-                        Box(
-                            Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp))
-                                .padding(horizontal = 15.dp),
-                            Alignment.Center
-                        ) {
-                            Box(Modifier.clip(RoundedCornerShape(5.dp)).background(Color.DarkGray).padding(horizontal = 5.dp, vertical = 5.dp)) {
-                                Text(
-                                    (state as BookState.Data).err,
-                                    Modifier.testTag(TestIds.Book.ERROR),
-                                    fontSize = 15.sp,
-                                    textAlign = TextAlign.Center,
-
-                                    )
-                            }
+                }
+                if ((state as BookState.Data).err.isNotEmpty()) {
+                    Box(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp))
+                            .padding(horizontal = 15.dp),
+                        Alignment.Center
+                    ) {
+                        Box(Modifier.clip(RoundedCornerShape(5.dp)).background(Color.DarkGray).padding(horizontal = 5.dp, vertical = 5.dp)) {
+                            Text(
+                                (state as BookState.Data).err,
+                                Modifier.testTag(TestIds.Book.ERROR),
+                                fontSize = 15.sp,
+                                textAlign = TextAlign.Center,
+                                )
                         }
                     }
                 }

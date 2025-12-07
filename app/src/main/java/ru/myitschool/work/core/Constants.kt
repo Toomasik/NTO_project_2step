@@ -6,4 +6,5 @@ object Constants {
     const val INFO_URL = "/info"
     const val BOOKING_URL = "/booking"
     const val BOOK_URL = "/book"
+    const val USE_TEST = false
 }

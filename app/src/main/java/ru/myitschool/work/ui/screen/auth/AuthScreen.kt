@@ -3,6 +3,7 @@ package ru.myitschool.work.ui.screen.auth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -102,11 +103,12 @@ private fun Content(
         label = { Text(stringResource(R.string.auth_label)) },
         supportingText = {
             if (state.err.isNotEmpty()) {
-                Text(state.err,
-                    Modifier.testTag(TestIds.Auth.ERROR).padding(top = 4.dp).background(Color.DarkGray).clip(RoundedCornerShape(5.dp)),
+                Box(Modifier.padding(top = 5.dp).clip(RoundedCornerShape(5.dp)).background(Color.DarkGray)) {
+                    Text(state.err,
+                    Modifier.testTag(TestIds.Auth.ERROR).padding(5.dp),
                     fontSize = 16.sp,
                     color = Color.White
-                )}
+                )}}
         }
 
     )

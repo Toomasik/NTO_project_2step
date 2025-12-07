@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.myitschool.work.core.Constants.USE_TEST
 import ru.myitschool.work.data.repo.AuthRepository
 import ru.myitschool.work.domain.auth.CheckAndSaveAuthCodeUseCase
 
@@ -32,7 +33,7 @@ class AuthViewModel : ViewModel() {
                         },
                         onFailure = { error ->
                             error.printStackTrace()
-                            _actionFlow.emit(Unit) // test переход на main передаем void обьект в поток это ловит(собирает) корутина с помощью collect
+                            if(USE_TEST) _actionFlow.emit(Unit) // test переход на main передаем void обьект в поток это ловит(собирает) корутина с помощью collect
                             _uiState.value = AuthState.Data(
                                 err = error.message ?: "Неизвестная ошибка"
                             )
